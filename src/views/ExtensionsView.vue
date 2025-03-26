@@ -4,7 +4,7 @@
     <ul>
       <li v-for="extension in extensions" :key="extension.name">
         <strong>{{ extension.name }}</strong>: {{ extension.description }}
-         <button @click="installExtension(extension)" :disabled="extension.installed">
+        <button @click="installExtension(extension)" :disabled="extension.installed">
           {{ extension.installed ? 'Installed' : 'Install' }}
         </button>
       </li>
@@ -13,22 +13,28 @@
 </template>
 
 <script lang="ts">
-import extensions from '../assets/extensions.json';
+import { defineComponent, computed } from 'vue';
+import { useExtensionsStore, type Extension } from '../stores/extensions';
+import { useRouter } from 'vue-router';
 
-export default {
+export default defineComponent({
   name: 'ExtensionsList',
-  data() {
-    return {
-      extensions
+  setup() {
+    const store = useExtensionsStore();
+    const router = useRouter();
+    const extensions = computed(() => store.extensions);
+
+    const installExtension = (extension: Extension) => {
+      store.installExtension(extension);
+      router.push(extension.internalUrl);
     };
-  },
-  methods: {
-    installExtension(extension) {
-      extension.installed = true;
-      console.log(`Installing ${extension.name}...`);
-    }
+
+    return {
+      extensions,
+      installExtension
+    };
   }
-};
+});
 </script>
 
 <style scoped>

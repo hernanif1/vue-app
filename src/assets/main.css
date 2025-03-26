@@ -1,5 +1,8 @@
 @import './base.css';
 
+html,body{
+  min-height: 100%;
+}
 #app {
   margin: 0;
   padding: 0;

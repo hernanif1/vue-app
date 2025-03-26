@@ -2,6 +2,9 @@
   {
     "name": "Correção online",
     "description": "Corrija seu redações de vestibulares.",
-    "installed": false
+    "installed": false,
+    "internalUrl": "/correcao-online",
+    "icon": "🔧",
+    "url": "https://example.com/vue-devtools"
   }
 ]

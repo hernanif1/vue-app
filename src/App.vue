@@ -1,5 +1,24 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router';
+import { useExtensionsStore } from './stores/extensions';
+import { computed, onMounted } from 'vue';
+import router from "./router";
+
+const store = useExtensionsStore();
+onMounted(() => {
+  store.setExtensions([
+    { name: 'Correção online', description: 'Corrija textos online', installed: false, internalUrl: '/corrrecao-online', externalAppUrl: 'https://example.com/', icon: '🔧' },
+  ]);
+});
+
+const installedExtensions = computed(() => store.extensions.filter(extension => extension.installed));
+const currentExtension = computed(() => {
+  return store.extensions.find(extension => {
+    console.log('router.currentRoute.value.path', router.currentRoute.value.path);
+    console.log('extension.internalUrl', extension.internalUrl);
+   return  extension.internalUrl === router.currentRoute.value.path
+  });
+});
 </script>
 
 <template>
@@ -10,11 +29,23 @@ import { RouterLink, RouterView } from 'vue-router'
           <span class="icon">🏠</span>
           <span class="tooltip">Extensions</span>
         </RouterLink>
+
+        <div v-for="extension in installedExtensions" :key="extension.name" class="nav-icon">
+          <RouterLink :to="extension.internalUrl" class="nav-icon">
+            <span class="icon">{{ extension.icon }}</span>
+            <span class="tooltip">{{ extension.name }}</span>
+          </RouterLink>
+        </div>
       </nav>
     </aside>
 
     <main class="main-content">
-      <RouterView />
+      <div class="external-app" v-if="currentExtension">
+        <iframe :src="currentExtension.externalAppUrl" class="external-app"></iframe>
+      </div>
+      <div v-else>
+        <RouterView />
+      </div>
     </main>
   </div>
 </template>
@@ -59,7 +90,14 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .main-content {
   flex: 1;
-  padding: 2rem;
   overflow-y: auto;
+  min-height: 100%;
+}
+
+.external-app {
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
 }
 </style>
